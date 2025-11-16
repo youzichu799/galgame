@@ -172,37 +172,35 @@
 </head>
 <body>
     <div class="container">
-        <h1>图片隐写工具</h1>
+        <h1>LSB图片隐写工具</h1>
         
         <!-- 隐写功能区 -->
         <div class="section">
             <h2 class="section-title">图片隐写</h2>
             
             <div class="note">
-                <strong>提示:</strong> 使用PNG或BMP格式的图片才能发挥最好的效果，使用JPEG等有损压缩格式可能会导致隐藏信息丢失。<br>
-                <strong>注意:</strong> 1、隐写图片需要载体图片大小大于秘密图片，若未满足会自动扩大载体图片分辨率<br>
-                2、纠错设置是为了提高自身还原能力，让图片在传播时即便被压缩损坏也能尽可能的还原分解，但会生成的图片体积会增加<br>
-                3、发送到平台上，先点击查看原图再下载才能更好的分解图片
+                <strong>提示:</strong> 为了获得最佳效果，请使用PNG格式的图片。使用JPEG等有损压缩格式可能会导致隐藏信息丢失。<br>
+                <strong>注意:</strong> 如果载体图片较小，系统会自动扩展载体图片以适应秘密图片数据。
             </div>
             
             <div>
                 <h3>纠错设置</h3>
                 <div class="radio-group">
                     <label>
-                        <input type="radio" name="ecc" value="low" checked> 低纠错
+                        <input type="radio" name="ecc" value="low" checked> 低纠错 (较小文件)
                     </label>
                     <label>
                         <input type="radio" name="ecc" value="medium"> 中等纠错
                     </label>
                     <label>
-                        <input type="radio" name="ecc" value="high"> 高纠错
+                        <input type="radio" name="ecc" value="high"> 高纠错 (较强鲁棒性)
                     </label>
                 </div>
             </div>
             
             <div class="preview-container">
                 <div class="preview-item">
-                    <h3>载体图片 (显示的图片)</h3>
+                    <h3>载体图片 (图片B)</h3>
                     <div id="cover-upload" class="upload-area">
                         <p>点击选择载体图片</p>
                         <input type="file" id="cover-input" accept="image/*" style="display: none;">
@@ -212,7 +210,7 @@
                 </div>
                 
                 <div class="preview-item">
-                    <h3>秘密图片 (隐藏的图片)</h3>
+                    <h3>秘密图片 (图片A)</h3>
                     <div id="secret-upload" class="upload-area">
                         <p>点击选择秘密图片</p>
                         <input type="file" id="secret-input" accept="image/*" style="display: none;">
@@ -229,7 +227,7 @@
             
             <div id="loading" class="loading">
                 <div class="spinner"></div>
-                <div class="loading-text">正在融合图片...（等待时间可能较长）</div>
+                <div class="loading-text">正在融合图片...</div>
             </div>
             
             <div id="embed-status" class="status" style="display: none;"></div>
@@ -560,7 +558,7 @@
                 document.getElementById('download-btn').disabled = false;
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('embed-btn').disabled = false;
-                showStatus('embed-status', `图片融合完成! `, 'success');
+                showStatus('embed-status', `图片融合完成! 载体图片已扩展至 ${finalCoverWidth}x${finalCoverHeight} (保持原始比例)`, 'success');
             } catch (error) {
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('embed-btn').disabled = false;
@@ -623,7 +621,7 @@
                 // 检查标识符
                 const magicNumber = "LSB_STEG_v1";
                 if (!extractedData.startsWith(magicNumber)) {
-                    showStatus('extract-status', '未检测到有效的标识符，这不是一个可分解的图片，或者图片数据已完全损坏无法分解', 'error');
+                    showStatus('extract-status', '未检测到有效的隐写标识符，这不是一个融合图片', 'error');
                     document.getElementById('loading').style.display = 'none';
                     document.getElementById('extract-btn').disabled = false;
                     return;
@@ -682,7 +680,7 @@
                 document.getElementById('extract-result').style.display = 'block';
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('extract-btn').disabled = false;
-                showStatus('extract-status', '解密成功!' + (checksum !== calculatedChecksum ? ' (数据可能会有损坏)' : ''), 
+                showStatus('extract-status', '解密成功!' + (checksum !== calculatedChecksum ? ' (数据可能已损坏)' : ''), 
                           checksum !== calculatedChecksum ? 'warning' : 'success');
             } catch (error) {
                 document.getElementById('loading').style.display = 'none';
